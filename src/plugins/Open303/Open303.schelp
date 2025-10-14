@@ -1,0 +1,180 @@
+CLASS:: Open303
+SUMMARY:: TB-303 bass synthesizer emulation
+CATEGORIES:: UGens>Synths
+RELATED:: Classes/MoogFF, Classes/RLPF
+
+DESCRIPTION::
+Open303 is a monophonic bass synthesizer that emulates the sound of the Roland TB-303. It features a characteristic resonant filter, envelope modulation, and accent capabilities.
+
+The synth includes both standard TB-303 parameters and extended controls from the Devil Fish modification, providing extensive sound design possibilities for acid bass sounds.
+
+CLASSMETHODS::
+
+METHOD:: ar, kr
+
+ARGUMENT:: gate
+Gate signal (0 or 1). Triggers note on when going from 0 to 1, note off when going from 1 to 0.
+
+ARGUMENT:: noteNum
+MIDI note number (0-127). The pitch of the note to play.
+
+ARGUMENT:: velocity
+Velocity value (0.0-1.0). Values >= 0.79 (100/127) trigger accent.
+
+ARGUMENT:: waveform
+Blend between sawtooth (0.0) and square (1.0) waveforms. Default: 0.5.
+
+ARGUMENT:: tuning
+Master tuning frequency for A4 in Hz. Default: 440.
+
+ARGUMENT:: cutoff
+Filter cutoff frequency in Hz. Default: 1000.
+
+ARGUMENT:: resonance
+Filter resonance amount (0-100). Higher values create more resonant "acid" sound. Default: 80.
+
+ARGUMENT:: envMod
+Envelope modulation depth in percent (0-100). Controls how much the envelope affects the filter cutoff. Default: 50.
+
+ARGUMENT:: decay
+Envelope decay time for non-accented notes in milliseconds. Devil Fish range: 30-3000 ms. Default: 1000.
+
+ARGUMENT:: accent
+Accent amount in percent (0-100). Default: 50.
+
+ARGUMENT:: volume
+Master volume level in dB. Default: -12.
+
+ARGUMENT:: ampSustain
+Amplitude envelope sustain level in dB. Default: 0.
+
+ARGUMENT:: ampDecay
+Amplitude envelope decay time in milliseconds. Default: 1230.
+
+ARGUMENT:: ampRelease
+Amplitude envelope release time in milliseconds. Default: 1.
+
+ARGUMENT:: feedbackHPF
+Cutoff frequency for highpass filter inside the filter feedback loop in Hz. Default: 150.
+
+ARGUMENT:: normalAttack
+Filter envelope attack time for non-accented notes in milliseconds. Devil Fish range: 0.3-30 ms. Default: 3.
+
+ARGUMENT:: accentAttack
+Filter envelope attack time for accented notes in milliseconds. Default: 3.
+
+ARGUMENT:: accentDecay
+Filter envelope decay time for accented notes in milliseconds. Devil Fish range: 30-3000 ms. Default: 200.
+
+ARGUMENT:: slideTime
+Slide (glide/portamento) time in milliseconds. TB-303 had 60 ms slide time. Default: 60.
+
+EXAMPLES::
+
+code::
+// Boot the server
+s.boot;
+
+// Simple acid bassline
+(
+SynthDef(\acid303, {
+    var sig, env;
+    sig = Open303.ar(
+        gate: \gate.kr(0),
+        noteNum: \note.kr(36),
+        velocity: \velocity.kr(0.5),
+        waveform: \waveform.kr(0.2),
+        cutoff: \cutoff.kr(800),
+        resonance: \resonance.kr(85),
+        envMod: \envMod.kr(60),
+        decay: \decay.kr(800),
+        accent: \accent.kr(70),
+        volume: \volume.kr(-6)
+    );
+    sig = sig ! 2; // stereo
+    Out.ar(\out.kr(0), sig);
+}).add;
+)
+
+// Play some notes
+x = Synth(\acid303, [\gate, 1, \note, 36, \velocity, 0.5]);
+x.set(\gate, 0); // release
+x.free;
+
+// Acid sequence with Pbind
+(
+Pdef(\acid303seq,
+    Pbind(
+        \instrument, \acid303,
+        \dur, 0.25,
+        \note, Pseq([36, 48, 43, 41, 36, 48, 43, 41], inf),
+        \velocity, Prand([0.5, 0.9], inf), // some accents
+        \cutoff, Pexprand(500, 2500, inf),
+        \resonance, 85,
+        \envMod, Pwhite(40, 80, inf),
+        \decay, 600,
+        \waveform, 0.3,
+        \legato, Pwrand([0.5, 1.5], [0.7, 0.3], inf) // some slides
+    )
+).play;
+)
+
+Pdef(\acid303seq).stop;
+
+// Exploring waveform blend
+(
+{
+    var waveform = LFTri.kr(0.1).range(0, 1);
+    var sig = Open303.ar(
+        gate: Impulse.kr(4),
+        noteNum: 36,
+        velocity: 0.7,
+        waveform: waveform,
+        cutoff: 1200,
+        resonance: 90,
+        envMod: 70,
+        decay: 400
+    );
+    sig ! 2;
+}.play;
+)
+
+// Resonance and filter sweep
+(
+{
+    var cutoff = LFNoise1.kr(0.3).exprange(300, 3000);
+    var sig = Open303.ar(
+        gate: Impulse.kr(6),
+        noteNum: Demand.kr(Impulse.kr(6), 0, Dseq([36, 43, 48, 41], inf)),
+        velocity: TRand.kr(0.5, 1.0, Impulse.kr(6)),
+        waveform: 0.2,
+        cutoff: cutoff,
+        resonance: 95,
+        envMod: 80,
+        decay: 300,
+        accent: 80
+    );
+    sig ! 2;
+}.play;
+)
+
+// Slide example
+(
+{
+    var gate = Impulse.kr(4);
+    var note = Demand.kr(gate, 0, Dseq([36, 48, 43, 41], inf));
+    var sig = Open303.ar(
+        gate: gate,
+        noteNum: note,
+        velocity: 0.6,
+        waveform: 0.1,
+        cutoff: 1500,
+        resonance: 88,
+        envMod: 65,
+        decay: 500,
+        slideTime: 120 // longer slide time
+    );
+    sig ! 2;
+}.play;
+)
+::

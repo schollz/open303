@@ -1,0 +1,34 @@
+# Build directories
+build/
+open303-sc/
+
+# CMake generated files
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+install_manifest.txt
+*.cmake
+!CMakeLists.txt
+
+# Compiled files
+*.o
+*.so
+*.dylib
+*.dll
+*.a
+*.lib
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Backup files
+*_backup.scd
+*.bak
+
+# Reference materials (optional - uncomment if needed)
+# reference/
