@@ -124,7 +124,7 @@ namespace rosic
     #ifdef __GNUC__  // \todo assembly-version causes compiler errors on gcc
       *sinResult = sin(x);
       *cosResult = cos(x);
-    #else
+    #elif defined _MSC_VER && defined _M_IX86
       double s, c;     // do we need these intermediate variables?
       __asm fld x
       __asm fsincos
@@ -132,6 +132,9 @@ namespace rosic
       __asm fstp s
       *sinResult = s;
       *cosResult = c;
+    #else
+      *sinResult = sin(x);
+      *cosResult = cos(x);
     #endif
   }
 

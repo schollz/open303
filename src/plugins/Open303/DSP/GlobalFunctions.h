@@ -300,10 +300,12 @@ INLINE bool isPowerOfTwo(unsigned int x)
   return false;
 }
 
+#ifndef _MSC_VER
 INLINE double log2(double x)
 {
   return ONE_OVER_LN2*log(x);
 }
+#endif
 
 INLINE double logB(double x, double b)
 {

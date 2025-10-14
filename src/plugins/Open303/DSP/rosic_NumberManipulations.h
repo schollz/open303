@@ -16,10 +16,10 @@ namespace rosic
   /** Assuming, that the FPU is in 'to nearest even integer' rounding mode (which is the default),
   this function rounds to the nearest integer using upward rounding when the argument is exactly
   halfway between two integers (instead of returning the nearest even integer in this case).
-  Argument x must satify (INT_MIN/2)ñ1.0 < x < (INT_MAX/2)+1.0.  */
+  Argument x must satify (INT_MIN/2)ï¿½1.0 < x < (INT_MAX/2)+1.0.  */
   INLINE int roundToInt(double x)
   {
-#  if defined _MSC_VER
+#  if defined _MSC_VER && defined _M_IX86
     const float round_to_nearest = 0.5f;
     int i;
      __asm
@@ -55,7 +55,7 @@ namespace rosic
 
   INLINE int floorInt(double x)
   {
-#  if defined _MSC_VER
+#  if defined _MSC_VER && defined _M_IX86
     const float round_towards_m_i = -0.5f;
     int i;
     __asm
