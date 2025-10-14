@@ -160,6 +160,37 @@ void Open303::noteOn(int noteNumber, int velocity, double detune)
   idle = false;
 }
 
+void Open303::retriggerNote(int noteNumber, int velocity)
+{
+  bool hasAccent = (velocity >= 100);
+
+  // Set the target frequency for sliding
+  oscFreq = pitchToFreq(noteNumber, tuning);
+  // Don't call pitchSlewLimiter.setState() - let it slide naturally
+
+  // Update envelope parameters based on accent
+  if( hasAccent )
+  {
+    accentGain = accent;
+    setMainEnvDecay(accentDecay);
+    ampEnv.setRelease(accentAmpRelease);
+  }
+  else
+  {
+    accentGain = 0.0;
+    setMainEnvDecay(normalDecay);
+    ampEnv.setRelease(normalAmpRelease);
+  }
+
+  // Retrigger the envelopes
+  mainEnv.trigger();
+  ampEnv.noteOn(true, noteNumber, 64);
+
+  currentNote = noteNumber;
+  currentVel  = velocity;
+  idle = false;
+}
+
 void Open303::allNotesOff()
 {
   ampEnv.noteOff();

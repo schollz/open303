@@ -19,25 +19,26 @@ private:
 
     enum InputParams {
         Gate,          // 0
-        NoteNum,       // 1
-        Velocity,      // 2
-        Waveform,      // 3
-        Tuning,        // 4
-        Cutoff,        // 5
-        Resonance,     // 6
-        EnvMod,        // 7
-        Decay,         // 8
-        Accent,        // 9
-        Volume,        // 10
+        Trig,          // 1
+        NoteNum,       // 2
+        Velocity,      // 3
+        Waveform,      // 4
+        Tuning,        // 5
+        Cutoff,        // 6
+        Resonance,     // 7
+        EnvMod,        // 8
+        Decay,         // 9
+        Accent,        // 10
+        Volume,        // 11
         // Extended parameters
-        AmpSustain,    // 11
-        AmpDecay,      // 12
-        AmpRelease,    // 13
-        FeedbackHPF,   // 14
-        NormalAttack,  // 15
-        AccentAttack,  // 16
-        AccentDecay,   // 17
-        SlideTime,     // 18
+        AmpSustain,    // 12
+        AmpDecay,      // 13
+        AmpRelease,    // 14
+        FeedbackHPF,   // 15
+        NormalAttack,  // 16
+        AccentAttack,  // 17
+        AccentDecay,   // 18
+        SlideTime,     // 19
         NumInputParams
     };
 
@@ -61,8 +62,10 @@ private:
     float m_prev_accent_decay;
     float m_prev_slide_time;
 
-    // Gate tracking
+    // Gate and trigger tracking
     float m_prev_gate;
+    float m_prev_trig;
+    float m_prev_note_num;
     int m_current_note;
 
     rosic::Open303 synth;

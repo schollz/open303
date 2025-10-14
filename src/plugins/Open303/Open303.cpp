@@ -66,6 +66,8 @@ Open303::Open303() {
     m_prev_slide_time = slide_time;
 
     m_prev_gate = 0.f;
+    m_prev_trig = 0.f;
+    m_prev_note_num = -1.f;
     m_current_note = -1;
 
     // Determine calculation function based on rate
@@ -85,16 +87,28 @@ void Open303::next_a(int nSamples) {
     float *outbuf = out(Out1);
 
     for (int i = 0; i < nSamples; ++i) {
-        // Read gate, note, and velocity for this sample
+        // Read gate, trig, note, and velocity for this sample
         float gate = in(Gate)[i];
+        float trig = in(Trig)[i];
         float note_num = in(NoteNum)[i];
         int velocity = (int)(in(Velocity)[i] * 127.f);
 
         // Handle note on/off
+        bool should_trigger = false;
+
+        // Trigger on gate rising edge
         if (gate > 0.5f && m_prev_gate <= 0.5f) {
-            // Gate went high - note on
+            should_trigger = true;
+        }
+        // Trigger on trig rising edge (even if gate is already high)
+        else if (trig > 0.5f && m_prev_trig <= 0.5f) {
+            should_trigger = true;
+        }
+
+        if (should_trigger) {
             int note = (int)note_num;
-            synth.noteOn(note, velocity, 0.0);
+            // Retrigger envelopes while maintaining pitch slide
+            synth.retriggerNote(note, velocity);
             m_current_note = note;
         } else if (gate <= 0.5f && m_prev_gate > 0.5f) {
             // Gate went low - note off
@@ -102,9 +116,16 @@ void Open303::next_a(int nSamples) {
                 synth.noteOn(m_current_note, 0, 0.0);
                 m_current_note = -1;
             }
+        } else if (gate > 0.5f && note_num != m_prev_note_num) {
+            // Note changed while gate is high - slide to new note without re-triggering envelope
+            int note = (int)note_num;
+            synth.noteOn(note, velocity, 0.0);
+            m_current_note = note;
         }
 
         m_prev_gate = gate;
+        m_prev_trig = trig;
+        m_prev_note_num = note_num;
 
         // Update parameters if changed
         float waveform = in(Waveform)[i];
@@ -141,14 +162,26 @@ void Open303::next_k(int nSamples) {
 
     // Read control rate inputs
     float gate = in0(Gate);
+    float trig = in0(Trig);
     float note_num = in0(NoteNum);
     int velocity = (int)(in0(Velocity) * 127.f);
 
     // Handle note on/off
+    bool should_trigger = false;
+
+    // Trigger on gate rising edge
     if (gate > 0.5f && m_prev_gate <= 0.5f) {
-        // Gate went high - note on
+        should_trigger = true;
+    }
+    // Trigger on trig rising edge (even if gate is already high)
+    else if (trig > 0.5f && m_prev_trig <= 0.5f) {
+        should_trigger = true;
+    }
+
+    if (should_trigger) {
         int note = (int)note_num;
-        synth.noteOn(note, velocity, 0.0);
+        // Retrigger envelopes while maintaining pitch slide
+        synth.retriggerNote(note, velocity);
         m_current_note = note;
     } else if (gate <= 0.5f && m_prev_gate > 0.5f) {
         // Gate went low - note off
@@ -156,9 +189,16 @@ void Open303::next_k(int nSamples) {
             synth.noteOn(m_current_note, 0, 0.0);
             m_current_note = -1;
         }
+    } else if (gate > 0.5f && note_num != m_prev_note_num) {
+        // Note changed while gate is high - slide to new note without re-triggering envelope
+        int note = (int)note_num;
+        synth.noteOn(note, velocity, 0.0);
+        m_current_note = note;
     }
 
     m_prev_gate = gate;
+    m_prev_trig = trig;
+    m_prev_note_num = note_num;
 
     // Update parameters if changed
     float waveform = in0(Waveform);

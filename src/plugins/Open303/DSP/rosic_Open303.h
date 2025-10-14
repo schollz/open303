@@ -221,13 +221,16 @@ namespace rosic
     //-----------------------------------------------------------------------------------------------
     // event handling:
 
-    /** Accepts note-on events (note offs are also handled here as note ons with velocity zero). */ 
+    /** Accepts note-on events (note offs are also handled here as note ons with velocity zero). */
     void noteOn(int noteNumber, int velocity, double detune);
+
+    /** Retriggers envelopes while maintaining pitch slide. */
+    void retriggerNote(int noteNumber, int velocity);
 
     /** Turns all possibly running notes off. */
     void allNotesOff();
 
-    /** Sets the pitchbend value in semitones. */ 
+    /** Sets the pitchbend value in semitones. */
     void setPitchBend(double newPitchBend);  
 
     //-----------------------------------------------------------------------------------------------
