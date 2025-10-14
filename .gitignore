@@ -30,5 +30,11 @@ install_manifest.txt
 *_backup.scd
 *.bak
 
+# Install directory
+install/
+
+# Archives
+*.zip
+
 # Reference materials (optional - uncomment if needed)
 # reference/
