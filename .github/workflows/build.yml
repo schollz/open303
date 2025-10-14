@@ -8,6 +8,9 @@ on:
   release:
     types: [ created ]
 
+permissions:
+  contents: write
+
 env:
   SC_VERSION: Version-3.14.0
   BUILD_TYPE: Release
@@ -117,8 +120,6 @@ jobs:
       # Upload to release (only on release)
       - name: Upload to release
         if: github.event_name == 'release'
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           files: Open303-${{ matrix.artifact_suffix }}.zip
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
