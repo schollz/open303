@@ -13,7 +13,10 @@ CLASSMETHODS::
 METHOD:: ar, kr
 
 ARGUMENT:: gate
-Gate signal (0 or 1). Triggers note on when going from 0 to 1, note off when going from 1 to 0.
+Gate signal (typically 0 or 1). Triggers note on when crossing from <= 0.5 to > 0.5, note off when crossing from > 0.5 to <= 0.5.
+
+ARGUMENT:: trig
+Trigger signal for envelope retriggering. A rising edge (crossing from <= 0.5 to > 0.5) retriggers the envelopes even when gate is already high, allowing note retriggering without releasing the synth. Useful for sliding sequences where the synth stays active.
 
 ARGUMENT:: noteNum
 MIDI note number (0-127). The pitch of the note to play.
@@ -176,5 +179,44 @@ Pdef(\acid303seq).stop;
     );
     sig ! 2;
 }.play;
+)
+
+// Using trig for envelope retriggering while synth stays active
+(
+SynthDef(\acid303_trig, {
+    arg t_trig;
+    var sig;
+    sig = Open303.ar(
+        gate: \gate.kr(1), // gate stays high
+        trig: t_trig, // use t_trig for retriggering
+        noteNum: \note.kr(36),
+        velocity: \velocity.kr(0.5),
+        waveform: 0.2,
+        cutoff: 1000,
+        resonance: 85,
+        envMod: 60,
+        decay: 800,
+        slideTime: 60
+    );
+    Out.ar(\out.kr(0), sig ! 2);
+}).add;
+)
+
+// Create synth and retrigger notes without releasing
+(
+~synth = Synth(\acid303_trig);
+~routine = Routine({
+    var notes = [36, 48, 43, 41];
+    inf.do { |i|
+        ~synth.set(\note, notes.wrapAt(i), \t_trig, 1);
+        0.25.wait;
+    };
+}).play;
+)
+
+// Stop
+(
+~routine.stop;
+~synth.free;
 )
 ::
