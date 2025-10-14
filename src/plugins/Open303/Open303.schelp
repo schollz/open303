@@ -13,7 +13,7 @@ CLASSMETHODS::
 METHOD:: ar, kr
 
 ARGUMENT:: gate
-Gate signal (0 or 1). Triggers note on when crossing from <= 0.5 to > 0.5, note off when crossing from > 0.5 to <= 0.5.
+Gate signal (typically 0 or 1). Triggers note on when crossing from <= 0.5 to > 0.5, note off when crossing from > 0.5 to <= 0.5.
 
 ARGUMENT:: trig
 Trigger signal for envelope retriggering. A rising edge (crossing from <= 0.5 to > 0.5) retriggers the envelopes even when gate is already high, allowing note retriggering without releasing the synth. Useful for sliding sequences where the synth stays active.
