@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [ main, master, develop ]
   release:
-    types: [ created ]
+    types: [ published ]
 
 permissions:
   contents: write
@@ -119,7 +119,7 @@ jobs:
 
       # Upload to release (only on release)
       - name: Upload to release
-        if: github.event_name == 'release'
+        if: github.event_name == 'release' && github.event.release.tag_name != '' && github.event.action == 'published'
         uses: softprops/action-gh-release@v2
         with:
           files: Open303-${{ matrix.artifact_suffix }}.zip
