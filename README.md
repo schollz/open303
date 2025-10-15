@@ -3,7 +3,7 @@
 A SuperCollider port of the Open303 TB-303 bass synthesizer.
 
 Original DSP code by RobinSchmidt (MIT License).
-Source: https://github.com/RobinSchmidt/RS-MET
+Source: https://github.com/RobinSchmidt/Open303/
 
 ## Building
 
@@ -25,32 +25,11 @@ Override with: `make SC_PATH=/path/to/supercollider`
 sclang tests/test_load.scd
 ```
 
-## Parameters
-
-- gate, noteNum, velocity
-- waveform (0-1), tuning (Hz)
-- cutoff (Hz), resonance (0-100), envMod (0-100)
-- decay (ms), accent (0-100), volume (dB)
-- ampSustain (dB), ampDecay (ms), ampRelease (ms)
-- feedbackHPF (Hz)
-- normalAttack (ms), accentAttack (ms), accentDecay (ms)
-- slideTime (ms)
-
 ## Usage
 
-```supercollider
-Open303.ar(
-    gate: gate,
-    noteNum: noteNum,
-    velocity: velocity,
-    cutoff: cutoff,
-    resonance: resonance
-)
-```
-
-See `tests/test_interactive.scd` for examples.
+See `tests/` for examples.
 
 ## License
 
 DSP code: MIT License (RobinSchmidt)
-SuperCollider wrapper: Same as SuperCollider project
+This code: MIT License
