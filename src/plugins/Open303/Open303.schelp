@@ -45,8 +45,14 @@ Envelope decay time for non-accented notes in milliseconds. Devil Fish range: 30
 ARGUMENT:: accent
 Accent amount in percent (0-100). Default: 50.
 
-ARGUMENT:: volume
-Master volume level in dB. Default: -12.
+ARGUMENT:: pregain
+Pregain level in dB, applied before distortion. Default: 0.
+
+ARGUMENT:: distortion
+Distortion amount. Uses the formula (distortion*x)/(1+distortion*abs(x)). Default: 0.
+
+ARGUMENT:: postgain
+Postgain level in dB, applied after distortion. Default: -12.
 
 ARGUMENT:: ampSustain
 Amplitude envelope sustain level in dB. Default: 0.
@@ -92,7 +98,9 @@ SynthDef(\acid303, {
         envMod: \envMod.kr(60),
         decay: \decay.kr(800),
         accent: \accent.kr(70),
-        volume: \volume.kr(-6)
+        pregain: \pregain.kr(0),
+        distortion: \distortion.kr(0),
+        postgain: \postgain.kr(-6)
     );
     sig = sig ! 2; // stereo
     Out.ar(\out.kr(0), sig);
