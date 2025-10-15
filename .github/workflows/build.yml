@@ -3,6 +3,8 @@ name: Build Open303
 on:
   push:
     branches: [ main, master, develop ]
+    tags:
+      - 'v*'
   pull_request:
     branches: [ main, master, develop ]
   release:
@@ -117,9 +119,10 @@ jobs:
           name: Open303-${{ matrix.artifact_suffix }}
           path: Open303-${{ matrix.artifact_suffix }}.zip
 
-      # Upload to release (only on release)
+      # Upload to release (only on tag push)
       - name: Upload to release
-        if: github.event_name == 'release'
+        if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
           files: Open303-${{ matrix.artifact_suffix }}.zip
+          overwrite_files: true
