@@ -20,7 +20,9 @@ Open303::Open303() {
     float envmod = in0(EnvMod);
     float decay = in0(Decay);
     float accent = in0(Accent);
-    float volume = in0(Volume);
+    float pregain = in0(Pregain);
+    float distortion = in0(Distortion);
+    float postgain = in0(Postgain);
     float amp_sustain = in0(AmpSustain);
     float amp_decay = in0(AmpDecay);
     float amp_release = in0(AmpRelease);
@@ -37,7 +39,9 @@ Open303::Open303() {
     synth.setEnvMod(envmod);
     synth.setDecay(decay);
     synth.setAccent(accent);
-    synth.setVolume(volume);
+    synth.setPregain(pregain);
+    synth.setDistortion(distortion);
+    synth.setPostgain(postgain);
     synth.setAmpSustain(amp_sustain);
     synth.setAmpDecay(amp_decay);
     synth.setAmpRelease(amp_release);
@@ -55,7 +59,9 @@ Open303::Open303() {
     m_prev_envmod = envmod;
     m_prev_decay = decay;
     m_prev_accent = accent;
-    m_prev_volume = volume;
+    m_prev_pregain = pregain;
+    m_prev_distortion = distortion;
+    m_prev_postgain = postgain;
     m_prev_amp_sustain = amp_sustain;
     m_prev_amp_decay = amp_decay;
     m_prev_amp_release = amp_release;
@@ -243,10 +249,22 @@ void Open303::next_k(int nSamples) {
         m_prev_accent = accent;
     }
 
-    float volume = in0(Volume);
-    if (volume != m_prev_volume) {
-        synth.setVolume(volume);
-        m_prev_volume = volume;
+    float pregain = in0(Pregain);
+    if (pregain != m_prev_pregain) {
+        synth.setPregain(pregain);
+        m_prev_pregain = pregain;
+    }
+
+    float distortion = in0(Distortion);
+    if (distortion != m_prev_distortion) {
+        synth.setDistortion(distortion);
+        m_prev_distortion = distortion;
+    }
+
+    float postgain = in0(Postgain);
+    if (postgain != m_prev_postgain) {
+        synth.setPostgain(postgain);
+        m_prev_postgain = postgain;
     }
 
     float amp_sustain = in0(AmpSustain);

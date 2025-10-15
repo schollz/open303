@@ -66,8 +66,14 @@ namespace rosic
     /** Sets the accent (in percent).  */
     void setAccent(double newAccent);
 
-    /** Sets the master volume level (in dB). */
-    void setVolume(double newVolume);     
+    /** Sets the postgain level (in dB), applied after distortion. */
+    void setPostgain(double newPostgain);
+
+    /** Sets the pregain level (in dB), applied before distortion. */
+    void setPregain(double newPregain);
+
+    /** Sets the distortion amount. */
+    void setDistortion(double newDistortion);     
 
     //  from here: parameter settings which were not available to the user in the 303:
 
@@ -162,8 +168,14 @@ namespace rosic
     /** Returns the accent (in percent). */
     double getAccent() const { return 100.0 * accent; }
 
-    /** Returns the master volume level (in dB). */
-    double getVolume() const { return level; }
+    /** Returns the postgain level (in dB). */
+    double getPostgain() const { return postgain; }
+
+    /** Returns the pregain level (in dB). */
+    double getPregain() const { return pregain; }
+
+    /** Returns the distortion amount. */
+    double getDistortion() const { return distortion; }
 
     //  from here: parameters which were not available to the user in the 303:
 
@@ -282,7 +294,11 @@ namespace rosic
     double ampScaler;        // final volume as raw factor
     double oscFreq;          // frequecy of the oscillator (without pitchbend)
     double sampleRate;       // the (non-oversampled) sample rate
-    double level;            // master volume level (in dB)
+    double pregain;          // pregain level (in dB), applied before distortion
+    double postgain;         // postgain level (in dB), applied after distortion
+    double distortion;       // distortion amount
+    double pregainScaler;    // pregain as raw factor
+    double postgainScaler;   // postgain as raw factor
     double levelByVel;       // velocity dependence of the level (in dB)
     double accent;           // scales all "byVel" parameters
     double slideTime;        // the time to slide from one note to another (in ms)
@@ -354,14 +370,27 @@ namespace rosic
     // these filters may actually operate without oversampling (but only if we reset them in
     // triggerNote - avoid clicks)
     tmp  = allpass.getSample(tmp);
-    tmp  = highpass2.getSample(tmp);        
+    tmp  = highpass2.getSample(tmp);
     tmp  = notch.getSample(tmp);
     tmp *= ampEnvOut;                       // amplified
     tmp *= ampScaler;
 
+    // Apply pregain
+    tmp *= pregainScaler;
+
+    // Apply distortion: (distortion*x)/(1+distortion*abs(x))
+    if( distortion > 0.0 )
+    {
+      double distortedSignal = (distortion * tmp) / (1.0 + distortion * fabs(tmp));
+      tmp = distortedSignal;
+    }
+
+    // Apply postgain
+    tmp *= postgainScaler;
+
     // find out whether we may switch ourselves off for the next call:
     idle = false;
-    //idle = (sequencer.getSequencerMode() == AcidSequencer::OFF && ampEnv.endIsReached() 
+    //idle = (sequencer.getSequencerMode() == AcidSequencer::OFF && ampEnv.endIsReached()
     //        && fabs(tmp) < 0.000001); // ampEnvOut < 0.000001;
 
     return tmp;

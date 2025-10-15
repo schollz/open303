@@ -10,7 +10,11 @@ Open303::Open303()
   ampScaler        =     1.0;
   oscFreq          =   440.0;
   sampleRate       = 44100.0;
-  level            =   -12.0;
+  pregain          =     0.0;
+  postgain         =   -12.0;
+  distortion       =     0.0;
+  pregainScaler    =     1.0;
+  postgainScaler   = dB2amp(-12.0);
   levelByVel       =    12.0;
   accent           =     0.0;
   slideTime        =    60.0;
@@ -115,10 +119,21 @@ void Open303::setAccent(double newAccent)
   accent = 0.01 * newAccent;
 }
 
-void Open303::setVolume(double newLevel)
+void Open303::setPostgain(double newPostgain)
 {
-  level     = newLevel;
-  ampScaler = dB2amp(level);
+  postgain = newPostgain;
+  postgainScaler = dB2amp(postgain);
+}
+
+void Open303::setPregain(double newPregain)
+{
+  pregain = newPregain;
+  pregainScaler = dB2amp(pregain);
+}
+
+void Open303::setDistortion(double newDistortion)
+{
+  distortion = newDistortion;
 }
 
 void Open303::setSlideTime(double newSlideTime)

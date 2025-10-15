@@ -29,16 +29,18 @@ private:
         EnvMod,        // 8
         Decay,         // 9
         Accent,        // 10
-        Volume,        // 11
+        Pregain,       // 11
+        Distortion,    // 12
+        Postgain,      // 13
         // Extended parameters
-        AmpSustain,    // 12
-        AmpDecay,      // 13
-        AmpRelease,    // 14
-        FeedbackHPF,   // 15
-        NormalAttack,  // 16
-        AccentAttack,  // 17
-        AccentDecay,   // 18
-        SlideTime,     // 19
+        AmpSustain,    // 14
+        AmpDecay,      // 15
+        AmpRelease,    // 16
+        FeedbackHPF,   // 17
+        NormalAttack,  // 18
+        AccentAttack,  // 19
+        AccentDecay,   // 20
+        SlideTime,     // 21
         NumInputParams
     };
 
@@ -52,7 +54,9 @@ private:
     float m_prev_envmod;
     float m_prev_decay;
     float m_prev_accent;
-    float m_prev_volume;
+    float m_prev_pregain;
+    float m_prev_distortion;
+    float m_prev_postgain;
     float m_prev_amp_sustain;
     float m_prev_amp_decay;
     float m_prev_amp_release;
